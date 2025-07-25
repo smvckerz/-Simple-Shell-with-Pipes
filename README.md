@@ -1,4 +1,4 @@
-# Simple Shell with Pipes (CSC415)
+# Simple Shell with Pipes
 
 A minimalist Bourne‑style shell written in C for my **Operating Systems (CSC415)** course.  It supports basic command execution, pipelines, and a few built‑in utilities while keeping the codebase small and readable.
 
