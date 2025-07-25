@@ -19,10 +19,28 @@
 const int lineLimit = 107;
 const int argCap = 7;
 
+void closePipe(int *fd) {
+    close(fd[0]);
+    close(fd[1]);
+}
+
 int main(int argc, char * argv[]) 
 {
   //checks to see if the entered a prompt
   char *prompt;
+
+  printf("===========================================\n");
+  printf(" Welcome to Eduardo's Simple Shell 🐚\n");
+  printf("===========================================\n");
+  printf("Available Commands:\n");
+  printf("  • Any valid system command (e.g. ls, pwd, cat, echo)\n");
+  printf("  • Commands with arguments (e.g. ls -l, echo Hello World)\n");
+  printf("  • Piped commands (e.g. ls -l | grep txt)\n");
+  printf("  • Type 'exit' to quit the shell\n");
+  printf("Notes:\n");
+  printf("  - Max 6 arguments per command (7 including command name)\n");
+  printf("  - Pipes are supported between exactly 2 commands\n");
+  printf("===========================================\n\n");
 
   //if the user entered a prompt, use it, otherwise use the default prompt
   if (argc > 1)
@@ -36,10 +54,14 @@ int main(int argc, char * argv[])
 
   //input buffer to store the user input
   char inputLine[lineLimit + 1];
-
   //while loop is infinite to keep the shell running until the user exits
   while (1) 
   {
+    if (strcmp(inputLine, "help") == 0)
+    {
+      printf("...\n"); // reprint the welcome message
+      continue;
+    }
     //prompt the user for input
     printf("%s", prompt);
     //get the user input
@@ -69,8 +91,8 @@ int main(int argc, char * argv[])
     //if pipeCheck is not NULL, it means there is a pipe in the input
     if (pipeCheck) 
     {
-      *pipeCheck = '\0'; // erminate the string at the pipe character
-      char *leftSide = inputLine; // eft side of the pipe
+      *pipeCheck = '\0'; // Terminate the string at the pipe character
+      char *leftSide = inputLine; // Left side of the pipe
       char *rightSide = pipeCheck + 1; //right side of the pipe
 
       //keeps track of the number of pipes
@@ -140,7 +162,7 @@ int main(int argc, char * argv[])
       }
 
       //if fork is successful, the child process will execute the left side command
-      if (pid1 == 0) //parent pid
+      if (pid1 == 0) //Child process
       {
         dup2(fd[1], 1); //redirect stdout to the write end of the pipe
         close(fd[0]); //close the read end of the pipe in parent
@@ -148,6 +170,12 @@ int main(int argc, char * argv[])
         execvp(argvleft[0], argvleft); //execute the left side command
         printf("execvp failed");
         exit(1);
+      }
+
+      if (strlen(leftSide) == 0 || strlen(rightSide) == 0)
+      {
+        fprintf(stderr, "Error: Incomplete piped command.\n");
+        continue;
       }
 
       //if fork is successful, the parent process will execute the right side command
@@ -184,8 +212,6 @@ int main(int argc, char * argv[])
         continue; //continue to the next iteration of the loop
       }
       continue;
-      // end of pipe handling
-      strtok(inputLine, " \t");
     }
 
     //if there is no pipe, we will execute the command normally
