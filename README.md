@@ -2,8 +2,6 @@
 
 A minimalist Bourne‑style shell written in C for my **Operating Systems (CSC415)** course.  It supports basic command execution, pipelines, and a few built‑in utilities while keeping the codebase small and readable—perfect for demonstrating systems‑level fundamentals.
 
-> **Why this project matters:**  Recruiters like to see you handle `fork`, `exec`, and pipes because they prove you understand process control on Unix‑like systems.
-
 ---
 
 ## Features
