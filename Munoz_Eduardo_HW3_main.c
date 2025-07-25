@@ -1,11 +1,9 @@
 /**************************************************************
- * Class::  CSC-415-0# Summer 2025
  * Name:: Eduardo Munoz
- * Student ID:: 922499965
  * GitHub-Name:: Smvckerz
- * Project:: Assignment 3 – Simple Shell with Pipes
+ * Project:: Simple Shell with Pipes
  *
- * File:: Munoz_Eduardo_HW3_main.c
+ * File:: Main.c
  *
  * Description:: file contains the main function for a simple shell program
  *
