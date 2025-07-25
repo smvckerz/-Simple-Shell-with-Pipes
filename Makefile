@@ -1,64 +1,46 @@
-# File: Standard Makefile for CSC415
-#
-# Description - This make file should be used for all your projects
-# It should be modified as needed for each homework
-#
-# ROOTNAME should be set you your lastname_firstname_HW.  Except for
-# and group projects, this will not change throughout the semester
-#
-# HW should be set to the assignment number (i.e. 1, 2, 3, etc.)
-#
-# FOPTION can be set to blank (nothing) or to any thing starting with an 
-# underscore (_).  This is the suffix of your file name.
-#
-# With these three options above set your filename for your homework
-# assignment will look like:  bierman_robert_HW1_main.c 
-#
-# RUNOPTIONS can be set to default values you want passed into the program
-# this can also be overridden on the command line
-#
-# OBJ - You can append to this line for additional files necessary for
-# your program, but only when you have multiple files.  Follow the convention
-# but hard code the suffix as needed.
-#
-# To Use the Makefile - Edit as above
-# then from the command line run:  make
-# That command will build your program, and the program will be named the same
-# as your main c file without an extension.
-#
-# You can then execute from the command line: make run
-# This will actually run your program
-#
-# Using the command: make clean
-# will delete the executable and any object files in your directory.
-#
+# -----------------------------
+# Simple Shell – Makefile
+# Author: Eduardo Muñoz
+# Description: Stand-alone build script (no instructor scaffolding)
+# -----------------------------
 
-FIRSTNAME=Eduardo
-LASTNAME=Munoz
+# === Config ===
+# Executable name
+PROG      := sfshell
+# All C source files (comma-separated list or wildcard)
+SRCS      := $(wildcard *.c)
+# Object files generated from SRCS
+OBJS      := $(SRCS:.c=.o)
 
-ROOTNAME=$(LASTNAME)_$(FIRSTNAME)_HW
-HW=3
-FOPTION=_main
-RUNOPTIONS="Prompt> "
-CC=gcc
-CFLAGS= -g -I.
-LIBS =-l pthread
-DEPS = 
-OBJ = $(ROOTNAME)$(HW)$(FOPTION).o
+# Compiler & flags
+CC        ?= gcc
+CFLAGS    ?= -Wall -Wextra -pedantic -std=c11 -g
+LDFLAGS   ?=
+LIBS      :=
 
-%.o: %.c $(DEPS)
-	$(CC) -c -o $@ $< $(CFLAGS) 
+# === Targets ===
 
-$(ROOTNAME)$(HW)$(FOPTION): $(OBJ)
-	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
+# Default rule – build everything
+all: $(PROG)
 
+$(PROG): $(OBJS)
+	$(CC) $(LDFLAGS) $^ -o $@ $(LIBS)
+
+# Pattern rule – compile .c → .o
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Run with optional arguments, e.g. `make run ARGS="-c 'ls -l'"`
+ARGS ?=
+run: $(PROG)
+	./$(PROG) $(ARGS)
+
+# Valgrind helper (Linux/macOS)
+vrun: $(PROG)
+	valgrind --leak-check=full ./$(PROG) $(ARGS)
+
+# Remove objects & binary
 clean:
-	rm *.o $(ROOTNAME)$(HW)$(FOPTION)
+	rm -f $(OBJS) $(PROG)
 
-run: $(ROOTNAME)$(HW)$(FOPTION)
-	./$(ROOTNAME)$(HW)$(FOPTION) $(RUNOPTIONS)
-
-vrun: $(ROOTNAME)$(HW)$(FOPTION)
-	valgrind ./$(ROOTNAME)$(HW)$(FOPTION) $(RUNOPTIONS)
-
-
+.PHONY: all run vrun clean
